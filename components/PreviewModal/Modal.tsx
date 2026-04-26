@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useRouter } from "next/navigation";
 import css from "./Modal.module.css";
 
-export default function Modal({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
+interface ModalProps {
+  onClose: () => void;
+  children: React.ReactNode;
+}
+
+export default function Modal({ onClose, children }: ModalProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -16,7 +19,7 @@ export default function Modal({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") router.back();
+      if (event.key === "Escape") onClose();
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -26,14 +29,14 @@ export default function Modal({ children }: { children: React.ReactNode }) {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [router]);
+  }, [onClose]);
 
   if (!mounted) return null;
 
   return createPortal(
-    <div className={css.backdrop} onClick={() => router.back()}>
+    <div className={css.backdrop} onClick={onClose}>
       <div className={css.modal} onClick={(e) => e.stopPropagation()}>
-        <button className={css.close} onClick={() => router.back()}>
+        <button className={css.close} onClick={onClose}>
           ✕
         </button>
         {children}

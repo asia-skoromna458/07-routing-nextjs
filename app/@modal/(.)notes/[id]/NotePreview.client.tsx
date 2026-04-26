@@ -19,20 +19,30 @@ export default function NotePreview({ id }: NotePreviewProps) {
     refetchOnMount: false,
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading note</p>;
-  if (!note) return <p>No note found</p>;
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    return <p>Error loading note</p>;
+  }
+
+  if (!note) {
+    return <p>No note found</p>;
+  }
 
   return (
     <div className={css.container}>
       <div className={css.item}>
         <div className={css.header}>
-          <h2>{note.title}</h2>
+          <h2 className={css.title}>{note.title}</h2>
         </div>
 
         <p className={css.tag}>{note.tag}</p>
+
         <p className={css.content}>{note.content}</p>
-        <p className={css.date}>{note.createdAt}</p>
+
+        <p className={css.date}>{new Date(note.createdAt).toLocaleString()}</p>
       </div>
     </div>
   );
