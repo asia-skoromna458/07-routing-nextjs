@@ -1,4 +1,4 @@
-import NotesSidebar from "../@sidebar/default";
+import NotesSidebar from "./@sidebar/NotesSidebar";
 import css from "./layout.module.css";
 import { ReactNode } from "react";
 type Props = {
