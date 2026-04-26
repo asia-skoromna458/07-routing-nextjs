@@ -1,6 +1,8 @@
-import { useEffect } from "react";
-import css from "./Modal.module.css";
+"use client";
+
+import css from "@/components/CreateNoteModal/Modal.module.css";
 import { createPortal } from "react-dom";
+import { useEffect } from "react";
 
 interface ModalProps {
   onClose: () => void;
@@ -8,9 +10,15 @@ interface ModalProps {
 }
 
 export default function Modal({ onClose, children }: ModalProps) {
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
         onClose();
       }
     };
@@ -27,13 +35,11 @@ export default function Modal({ onClose, children }: ModalProps) {
   return createPortal(
     <div
       className={css.backdrop}
+      onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
-      onClick={onClose}
     >
-      <div className={css.modal} onClick={(e) => e.stopPropagation()}>
-        {children}
-      </div>
+      <div className={css.modal}>{children}</div>
     </div>,
     document.body,
   );
