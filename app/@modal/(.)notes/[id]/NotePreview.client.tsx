@@ -1,49 +1,45 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import css from "./NotePreview.client.module.css";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
-import css from "./NotePreview.client.module.css";
+import Modal from "@/components/CreateNoteModal/CreateNoteModal";
 
-type NotePreviewProps = {
+type Props = {
   id: string;
 };
 
-export default function NotePreview({ id }: NotePreviewProps) {
-  const {
-    data: note,
-    isLoading,
-    isError,
-  } = useQuery({
+export default function NotePreviewClient({ id }: Props) {
+  const router = useRouter();
+
+  const close = () => router.back();
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
-    refetchOnMount: false,
   });
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (isError) {
-    return <p>Error loading note</p>;
-  }
-
-  if (!note) {
-    return <p>No note found</p>;
-  }
-
   return (
-    <div className={css.container}>
-      <div className={css.item}>
-        <div className={css.header}>
-          <h2 className={css.title}>{note.title}</h2>
-        </div>
-
-        <p className={css.tag}>{note.tag}</p>
-
-        <p className={css.content}>{note.content}</p>
-
-        <p className={css.date}>{new Date(note.createdAt).toLocaleString()}</p>
+    <Modal onClose={close}>
+      <div className={css.container}>
+        <button className={css.backBtn} onClick={close}>
+          Close
+        </button>
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error loading note.</p>}
+        {data && (
+          <div className={css.container}>
+            <div className={css.item}>
+              <div className={css.header}>
+                <h2>{data.title}</h2>
+              </div>
+              <p className={css.tag}>{data.tag}</p>
+              <p className={css.content}>{data.content}</p>
+              <p className={css.date}>{data.createdAt}</p>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </Modal>
   );
 }
