@@ -10,10 +10,21 @@ import { fetchNotes } from "@/lib/api";
 import Pagination from "@/components/Pagination/Pagination";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import { useDebouncedCallback } from "use-debounce";
+import { useParams, useSearchParams } from "next/navigation";
 
-export function NotesClient() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+export default function NotesClient() {
+  // slug
+  const params = useParams();
+  const tag = params?.slug?.[0];
+
+  // page + search з URL
+  const searchParams = useSearchParams();
+  const pageFromUrl = Number(searchParams.get("page")) || 1;
+  const searchFromUrl = searchParams.get("search") || "";
+
+  // локальний стан для toolbar
+  const [search, setSearch] = useState(searchFromUrl);
+  const [page, setPage] = useState(pageFromUrl);
 
   const handleSearch = useDebouncedCallback((value: string) => {
     setSearch(value);
@@ -21,8 +32,11 @@ export function NotesClient() {
   }, 300);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["notes", search, page],
-    queryFn: () => fetchNotes(page, 12, search),
+    queryKey: ["notes", search, page, tag],
+    queryFn: () =>
+      tag === "all"
+        ? fetchNotes(page, 12, search)
+        : fetchNotes(page, 12, search, tag),
     placeholderData: keepPreviousData,
   });
 

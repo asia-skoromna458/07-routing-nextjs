@@ -26,8 +26,6 @@ export const fetchNotes = async (
 };
 
 
-
-
 // CREATE
 export interface NewNote {
   title: string;
@@ -53,4 +51,3 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
   const res = await axios.get<Note>(`/notes/${id}`);
   return res.data 
 }
-

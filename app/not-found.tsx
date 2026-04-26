@@ -1,10 +1,12 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import css from "./not-found.module.css";
 import { useEffect } from "react";
 
-const NotFound = () => {
+export default function NotFound() {
   const router = useRouter();
+
   useEffect(() => {
     const timer = setTimeout(() => router.push("/"), 3000);
     return () => clearTimeout(timer);
@@ -18,5 +20,4 @@ const NotFound = () => {
       </p>
     </div>
   );
-};
-export default NotFound;
+}
