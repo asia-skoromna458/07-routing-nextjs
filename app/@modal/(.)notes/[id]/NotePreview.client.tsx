@@ -1,22 +1,27 @@
 "use client";
 
-import css from "./NotePreview.client.module.css";
+import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
-import { useEffect, useState } from "react";
-import type { Note } from "@/types/note";
+import css from "./NotePreview.client.module.css";
 
 type NotePreviewProps = {
   id: string;
 };
 
 export default function NotePreview({ id }: NotePreviewProps) {
-  const [note, setNote] = useState<Note | null>(null);
+  const {
+    data: note,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
+  });
 
-  useEffect(() => {
-    fetchNoteById(id).then((data: Note) => setNote(data));
-  }, [id]);
-
-  if (!note) return <p>Loading...</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error loading note</p>;
+  if (!note) return <p>No note found</p>;
 
   return (
     <div className={css.container}>

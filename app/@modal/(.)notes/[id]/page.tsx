@@ -1,58 +1,31 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+import { fetchNoteById } from "@/lib/api";
+import Modal from "@/components/Modal/Modal";
 import NotePreview from "./NotePreview.client";
 
 type PageProps = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
-export default function NoteModalPage({ params }: PageProps) {
-  const router = useRouter();
+export default async function NoteModalPage({ params }: PageProps) {
+  const { id } = await params;
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+  });
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 9999,
-      }}
-      onClick={() => router.back()}
-    >
-      <div
-        style={{
-          background: "#fff",
-          padding: "24px",
-          borderRadius: "8px",
-          maxWidth: "800px",
-          width: "100%",
-          position: "relative",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={() => router.back()}
-          style={{
-            position: "absolute",
-            top: "12px",
-            right: "12px",
-            background: "transparent",
-            border: "none",
-            fontSize: "20px",
-            cursor: "pointer",
-          }}
-        >
-          ✕
-        </button>
-
-        <NotePreview id={params.id} />
-      </div>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <Modal onClose={() => {}}>
+        <NotePreview id={id} />
+      </Modal>
+    </HydrationBoundary>
   );
 }

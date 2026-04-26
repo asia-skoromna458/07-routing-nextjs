@@ -10,19 +10,17 @@ import { fetchNotes } from "@/lib/api";
 import Pagination from "@/components/Pagination/Pagination";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import { useDebouncedCallback } from "use-debounce";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
-export default function NotesClient() {
-  // slug
-  const params = useParams();
-  const tag = params?.slug?.[0];
+type NotesClientProps = {
+  tag: string;
+};
 
-  // page + search з URL
+export default function NotesClient({ tag }: NotesClientProps) {
   const searchParams = useSearchParams();
   const pageFromUrl = Number(searchParams.get("page")) || 1;
   const searchFromUrl = searchParams.get("search") || "";
 
-  // локальний стан для toolbar
   const [search, setSearch] = useState(searchFromUrl);
   const [page, setPage] = useState(pageFromUrl);
 
@@ -45,7 +43,7 @@ export default function NotesClient() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox onSearch={handleSearch} />
+        <SearchBox onSearch={handleSearch} value={search} />
 
         {data && data.totalPages > 1 && (
           <Pagination
