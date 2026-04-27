@@ -1,6 +1,6 @@
 "use client";
 
-import css from "@/components/CreateNoteModal/Modal.module.css";
+import css from "@/components/Modal/Modal.module.css";
 import { createPortal } from "react-dom";
 import { useEffect } from "react";
 
